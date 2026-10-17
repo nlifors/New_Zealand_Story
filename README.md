@@ -57,31 +57,6 @@
 
 # The New Zealand Story — native macOS port
 
-```
-                    .--.
-                 .-(    ).
-                (___.__)__)
-      @@@@@@@@
-    @@########@@
-   @###++++#####@   @@@@
-  @##++++########@ @####@
- @##++############@@#####@
- @#################### o#@
-@########################==
-@##%########%###########@ ==
-@######%###############@   ==
-@##############%######@     =
- @##%################@
- @#######%##########@
-  @###############@@
-   @@###########@@
-     @@@@@@@@@@
-       |    |
-       |    |
-     ___  ___
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-```
-
 A faithful port of the Amiga version of *The New Zealand Story* (Taito 1988;
 Amiga conversion by Choice Software, code C. Gordon, graphics S. Connor) to
 macOS, built by reverse engineering the original program.
