@@ -15,6 +15,8 @@ APP="$ROOT/build/The New Zealand Story.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp .build/release/NewZealandStory "$APP/Contents/MacOS/NewZealandStory"
+# icon: original pixel art drawn by tools/make-icon.swift (no game graphics)
+swift tools/make-icon.swift "$APP/Contents/Resources/AppIcon.icns"
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -23,6 +25,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundleDisplayName</key><string>The New Zealand Story</string>
   <key>CFBundleIdentifier</key><string>local.port.newzealandstory</string>
   <key>CFBundleExecutable</key><string>NewZealandStory</string>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>1.0</string>
   <key>CFBundleVersion</key><string>1</string>
@@ -38,7 +41,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 PLIST
 codesign --force --deep -s - "$APP" 2>/dev/null || true
 # sanity check: no disk-derived data files in the bundle
-if find "$APP" -type f ! -name NewZealandStory ! -name Info.plist ! -name CodeResources | grep -q .; then
+if find "$APP" -type f ! -name NewZealandStory ! -name Info.plist ! -name CodeResources ! -name AppIcon.icns | grep -q .; then
   echo "unexpected files in bundle:"; find "$APP" -type f; exit 1
 fi
 echo "Built $APP"
