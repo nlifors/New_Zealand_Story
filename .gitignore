@@ -1,0 +1,11 @@
+# Original game data and anything derived from it — never commit
+*.adf
+*.ADF
+work/
+# Build output
+.build/
+*.app
+.DS_Store
+*.textClipping
+Sources/NZSGame/Generated/
+build/

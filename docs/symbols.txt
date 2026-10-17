@@ -1,0 +1,112 @@
+; Symbols for the New Zealand Story main image (addresses after the kernel's
+; 4-byte self-relocation). Format: HEXADDR NAME [f] [; comment]
+; "f" marks a function entry. Names only — no game data.
+; --- kernel ($400-$3200) ---
+00400 kernel_entry f
+0040c k_load_tracks f ; D0 track, D1 count, D2 drive, A0 dest
+00410 k_jt_410 f
+0055a kernel_start f
+00c24 k_load_tracks_impl f ; cracker's AmigaDOS-sector MFM reader
+012d8 k_level2_int f ; keyboard (CIA-A)
+01cb0 k_default_int f
+01cda k_trap_handler f
+02f9e k_bus_error f
+; --- game ---
+04000 game_entry f
+0564c rle_unpack f ; escape-byte RLE, same as launcher $7671E
+055ba load_tracks_retry f
+04dbe show_pc1_picture f ; A0 = PackBits data -> $68000 -> blit to both screens
+0507e unpack_pc1 f
+04e08 convert_intro_bank f
+04e92 convert_bob_bank f ; ST 5-word groups -> mask + 4 planes, in place
+0b950 blit_copy_planes f
+0befe set_palette f ; A0 = 16 ST colour words -> copper list $C328
+0c3b6 game_init f
+0c5c0 build_attribute_map f ; map at $44B26 -> 8x8 attribute grid $462A6
+0c812 print_text f
+0c84c print_char f
+0e800 snd_init f
+0e804 snd_jt_e804 f
+0e808 snd_play_tune f ; D0 = tune 1..12
+0e80c snd_vbl_tick f
+0e980 snd_stop_all f
+0f10e snd_init_impl f
+05dba level_table ; 20 x {attr ptr, ptr2, ptr3, gfx track, map track}
+0c1aa palette_level
+0c2a0 copper_list
+0da66 font_8x8
+157d0 tune_table
+15830 pattern_table
+22aa6 bank_main_data
+39aa6 bank_main_table
+3caa6 bank_intro_data
+4caa6 bank_intro_table
+4cca6 pic_zoo_pc1
+; entries found by Ghidra but not by flow analysis (reached indirectly)
+06c38 sub_6c38 f
+0859a sub_859a f
+0bba6 clear_draw_screen f ; clears the 32K buffer at (0x20,A6)
+0c036 sub_c036 f
+01b54 k_sub_1b54 f
+01cee k_sub_1cee f
+01cf4 k_sub_1cf4 f
+02a26 k_sub_2a26 f
+; --- named from reading the code (2026-10-14). "?" in a comment = uncertain role ---
+00404 k_key_is_down f ; D0 = Amiga raw key; Z clear if held (used by the cheat check)
+00408 k_read_joystick f ; called from the VBL; result stored at $63DB0
+00414 k_next_key f ; next raw key from the keyboard buffer (Z set if none)
+04088 game_start ; label inside game_entry: new game from the title screen
+040f8 level_loop f ; level start, then the main loop at $4298 (logic, wait flip, draw, flip)
+045fc title_attract_screen f ; ? text + bobs shown while waiting on the title
+04690 check_high_score f ; compares 6-digit score strings with the table
+04878 high_score_name_entry f ; ? letter selection with the joystick
+04918 show_new_zealand_map f ; world map between worlds (picture from tracks 144-148)
+04a22 update_spawn_points f ; table at (0xC6,A6): objects that appear at tile positions
+04cc6 intro_story_jump f ; jmp patched at run time ($4DAA) to $4088
+04ccc intro_story f ; walrus kidnapping sequence (intro sprite bank, PC1 zoo picture)
+04f1a new_game f ; sets lives (`move.w #3,D0` at $4F46; the cheat rewrites the 3 to 1000)
+050f4 intro_step f ; jump table on (0x70,A6)
+05240 draw_lives f
+052c4 draw_oxygen_bar f ; (0x6E,A6) oxygen 0..$136
+056a8 play_sample f ; A0 = IFF 8SVX FORM in memory
+05ad4 spawn_level_objects f ; A2 = level table pointer 2 (object list)
+0635a check_player_enemy_collision f
+065a8 player_collision_test f ; copy protection at $A742 overwrites its start if the check fails
+08e1e player_state_riding f ; ? linked object at (0x26,A5)
+09066 tile_attr_under_object f ; collision code (8x8 grid built by $C5C0)
+091d4 player_state_walk f ; ? oxygen refills by 4 per update
+0933e player_state_jump f ; ?
+0965c player_state_swim f ; ?
+0a742 copy_protection_check f ; magic left at $24 by the loader; sabotages $65AE if wrong
+0aeec camera_follow_player f ; player = object at $643BA
+0b0e6 run_object_handlers f ; objects $6535C downwards, handler at +$18
+0b1c2 animate_objects f ; animation-script interpreter (+$14, commands at $B270) + draw list
+0b4a2 alloc_object f ; free slot from the pool at $64516 (64 slots)
+0b4e4 spawn_object f ; ?
+0b55c draw_map f ; tiles at camera (0x2E/0x30,A6) into the draw buffer (0x20,A6)
+0b69a draw_bob_at f ; D0 = x<<16|y, D1 = image number
+0b6c4 draw_bob f ; bank pointers at $B6C6/$B6CC are rewritten for other banks
+0b8b4 blit_bob f ; masked (cookie-cut) blit, 4 planes
+0b9f0 title_wait_and_cheat f ; waits for fire; typed raw keys ^$41 compared with $45B4 (cheat)
+0ba4c read_joystick_latched f
+0ba78 read_joystick f ; D0 = direction bits, bit 7 = fire
+0baae fire_pressed_edge f
+0badc set_display_split f ; panel line: copper WAIT at $C366 + CIA-B TOD alarm
+0bb76 clear_screens f
+0bc30 wait_frames f
+0bc80 wait_vbl f
+0bc8c request_flip f ; applied by the level-6 interrupt at the split line
+0bcd0 wait_flip_done f
+0bcda reset_display_buffers f
+0bd92 random f ; LFSR in $DD66 (the VBL also mixes in D1 and a counter)
+0bdc0 play_tune f ; D0 = tune 1..12
+0bdcc stop_music f
+0c4a2 count_main_bank f
+0c52c make_mirrored_bobs f ; ? builds flipped copies above $4A2A6
+0c6a8 print_text_block f
+0c744 draw_big_char f ; ?
+0e9d6 snd_stop_impl f ; ?
+0ea3e snd_play_tune_impl f
+0eb02 snd_tick_impl f
+0bdd8 vbl_interrupt f
+0be8a level6_interrupt f ; CIA-B: timer B countdown (A6), TOD alarm = screen flip
